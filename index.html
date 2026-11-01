@@ -1,0 +1,154 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow"><title>Meme Scalper · Paper Dashboard</title>
+<style>
+:root{--bg:#0b0e14;--card:#131824;--card2:#171d2b;--line:#222a3b;--tx:#e6eaf2;--mut:#8b96ab;--g:#2ee59d;--r:#ff5d73;--y:#ffc857;--b:#5aa9ff;--p:#a78bfa}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font:14px/1.45 -apple-system,Segoe UI,Inter,Roboto,sans-serif}
+a{color:var(--b);text-decoration:none}a:hover{text-decoration:underline}
+.wrap{max-width:1500px;margin:0 auto;padding:14px}
+header{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-bottom:12px}
+h1{font-size:18px;margin:0;display:flex;gap:10px;align-items:center}
+.badge{padding:3px 9px;border-radius:99px;font-size:12px;font-weight:700;letter-spacing:.4px;border:1px solid}
+.b-paper{color:var(--y);border-color:#6b5a22;background:#2a2411}.b-on{color:var(--g);border-color:#1d6b4c;background:#0f2a21}.b-off{color:var(--r);border-color:#6b2531;background:#2a1117}
+.b-warn{color:var(--y);border-color:#6b5a22;background:#2a2411}.b-ok{color:var(--g);border-color:#1d6b4c;background:#0f2a21}
+.dot{width:8px;height:8px;border-radius:50%;display:inline-block;background:var(--g);box-shadow:0 0 8px var(--g);animation:p 1.6s infinite}.dot.off{background:var(--r);box-shadow:none;animation:none}
+@keyframes p{50%{opacity:.35}}
+.meta{color:var(--mut);font-size:12px}
+.grid{display:grid;gap:12px}.kpis{grid-template-columns:repeat(auto-fit,minmax(150px,1fr));margin-bottom:12px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;min-width:0}
+.card h2{margin:0 0 8px;font-size:12px;text-transform:uppercase;letter-spacing:.8px;color:var(--mut);font-weight:600;display:flex;justify-content:space-between;align-items:center}
+.kpi .v{font-size:22px;font-weight:700;font-variant-numeric:tabular-nums}.kpi .s{font-size:12px;color:var(--mut)}
+.pos{color:var(--g)}.neg{color:var(--r)}.mut{color:var(--mut)}
+.two{grid-template-columns:2fr 1fr}.three{grid-template-columns:1fr 1fr 1fr}
+@media(max-width:1000px){.two,.three{grid-template-columns:1fr}}
+.tw{overflow-x:auto}table{width:100%;border-collapse:collapse;font-size:12.5px;font-variant-numeric:tabular-nums}
+th{color:var(--mut);font-weight:600;text-align:left;padding:6px 8px;border-bottom:1px solid var(--line);white-space:nowrap;position:sticky;top:0;background:var(--card)}
+td{padding:7px 8px;border-bottom:1px solid #1a2132;vertical-align:top}tr:hover td{background:var(--card2)}
+td.r,th.r{text-align:right}.reason{min-width:260px;max-width:420px;color:#c3cbdb}
+.scroll{max-height:420px;overflow:auto}
+.tag{padding:1px 7px;border-radius:6px;font-size:11px;font-weight:700}
+.t-OPEN{background:#10283d;color:var(--b)}.t-PARTIAL_EXIT{background:#2a2411;color:var(--y)}.t-CLOSE{background:#1b1a33;color:var(--p)}.t-TX_FAILED{background:#2a1117;color:var(--r)}.t-RISK{background:#2a1117;color:var(--r)}.t-START,.t-STOP{background:#1a2132;color:var(--mut)}
+.feed{max-height:420px;overflow:auto}.ev{padding:7px 0;border-bottom:1px solid #1a2132;font-size:12.5px}.ev .tm{color:var(--mut);font-size:11.5px;margin-right:6px}
+.bar{height:20px;background:#1a2132;border-radius:5px;overflow:hidden;margin:3px 0}.bar>div{height:100%;background:linear-gradient(90deg,#3a7bd5,#5aa9ff);display:flex;align-items:center;padding-left:7px;font-size:11.5px;font-weight:700;color:#06101d;white-space:nowrap;min-width:fit-content}
+.fl{display:flex;justify-content:space-between;font-size:12px;color:var(--mut)}
+.cfg{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:4px 16px;font-size:12.5px}.cfg div{display:flex;justify-content:space-between;border-bottom:1px dashed #1f2638;padding:2px 0}.cfg span:first-child{color:var(--mut)}
+.cfgh{margin:10px 0 4px;color:var(--b);font-size:12px;font-weight:700}
+canvas{width:100%;height:260px;display:block}
+.pill{display:inline-block;padding:1px 7px;border-radius:5px;font-size:11px;margin-right:3px;background:#1a2132;color:var(--mut)}.pill.hit{background:#0f2a21;color:var(--g)}
+.imp{border:1px solid var(--line);border-radius:8px;padding:8px 10px;margin-bottom:8px;background:var(--card2)}.imp pre{margin:4px 0 0;white-space:pre-wrap;font:12px/1.4 ui-monospace,monospace;color:#c3cbdb}
+.empty{color:var(--mut);padding:14px;text-align:center}
+.warn{background:#2a1117;border:1px solid #6b2531;color:#ffb3bf;padding:8px 12px;border-radius:8px;margin-bottom:12px;display:none}
+</style></head><body><div class="wrap">
+<div class="warn" id="warn"></div>
+<header><h1><span class="dot" id="dot"></span> Meme Scalper <span class="badge b-paper" id="mode">PAPER</span> <span class="badge" id="run">…</span> <span class="badge" id="halt" style="display:none"></span></h1>
+<div class="meta" id="meta">loading…</div></header>
+<div class="grid kpis" id="kpis"></div>
+<div class="grid two" style="margin-bottom:12px">
+ <div class="card"><h2>Equity curve (SOL) <span class="mut" id="curvenote"></span></h2><canvas id="chart"></canvas></div>
+ <div class="card"><h2>Live event feed</h2><div class="feed" id="feed"></div></div>
+</div>
+<div class="card" style="margin-bottom:12px"><h2>Open positions <span id="nopen"></span></h2><div class="tw" id="open"></div></div>
+<div class="card" style="margin-bottom:12px"><h2>Closed trades <span id="nclosed"></span></h2><div class="tw scroll" id="closed"></div></div>
+<div class="grid three" style="margin-bottom:12px">
+ <div class="card"><h2>Performance</h2><div class="cfg" id="perf"></div></div>
+ <div class="card"><h2>Filter funnel (unique tokens)</h2><div id="funnel"></div><div class="meta" style="margin-top:6px">Passing all stages is rare by design — survival filters first.</div></div>
+ <div class="card"><h2>Top reject reasons (events)</h2><div class="scroll" style="max-height:300px" id="rej"></div></div>
+</div>
+<div class="grid two" style="margin-bottom:12px">
+ <div class="card"><h2>Config &amp; risk limits <span class="mut">read-only</span></h2><div id="cfg"></div></div>
+ <div class="card"><h2>Self-improvement log <span id="nimp" class="mut"></span></h2><div class="scroll" id="imp"></div>
+ <h2 style="margin-top:14px">Latest rejects</h2><div class="scroll" style="max-height:200px" id="rrej"></div></div>
+</div>
+<div class="meta" style="text-align:center;padding:10px">Read-only paper-trading dashboard · no wallet, no keys · all times IST · refreshes every 4 s</div>
+</div>
+<script>
+const $=id=>document.getElementById(id);const BASE=location.pathname.replace(/\/?(index\.html)?$/,'/');
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const f=(x,d=4)=>x==null?'–':Number(x).toFixed(d);
+const sg=(x,d=4)=>x==null?'–':(x>=0?'+':'')+Number(x).toFixed(d);
+const cls=x=>x==null?'':x>0?'pos':x<0?'neg':'';
+function dur(s){if(s==null)return'–';s=Math.round(s);if(s<60)return s+'s';const m=Math.floor(s/60);if(m<60)return m+'m '+(s%60)+'s';return Math.floor(m/60)+'h '+(m%60)+'m'}
+function px(x){if(x==null)return'–';if(x>=0.01)return x.toPrecision(4);return x.toExponential(3)}
+const ml=(m,s)=>`<a href="https://dexscreener.com/solana/${m}" target="_blank" rel="noopener">${esc(s)}</a>`;
+const mintLinks=m=>`<a href="https://dexscreener.com/solana/${m}" target="_blank" rel="noopener">dex</a> · <a href="https://solscan.io/token/${m}" target="_blank" rel="noopener">solscan</a> <span class="mut">${m.slice(0,4)}…${m.slice(-4)}</span>`;
+function kpi(t,v,s,c=''){return `<div class="card kpi"><h2>${t}</h2><div class="v ${c}">${v}</div><div class="s">${s||''}</div></div>`}
+function render(d){
+ if(d.error){$('warn').style.display='block';$('warn').textContent='Dashboard error: '+d.error;return}
+ $('warn').style.display='none';
+ if(d.push_age_s!=null&&d.push_age_s>45){$('warn').style.display='block';$('warn').textContent='Data feed from the scalper box is stale ('+Math.round(d.push_age_s)+'s old) — the box may be offline or restarting.'}
+ const a=d.account,s=d.summary,sc=d.scalper;
+ $('mode').textContent=(d.mode||'paper').toUpperCase();
+ const stale=sc.state_age_s!=null&&sc.state_age_s>30;
+ const run=$('run');const up=sc.running&&!stale;run.textContent=up?'SCALPER RUNNING':(sc.running?'RUNNING · STATE STALE':'SCALPER STOPPED');run.className='badge '+(up?'b-on':'b-off');$('dot').className='dot'+(up?'':' off');
+ const h=$('halt');if(a.halted_until_ist){h.style.display='';h.className='badge b-off';h.textContent='HALTED until '+a.halted_until_ist}else if(a.paused_until_ist){h.style.display='';h.className='badge b-warn';h.textContent='PAUSED until '+a.paused_until_ist}else{h.style.display='';h.className='badge b-ok';h.textContent='TRADING ACTIVE'}
+ $('meta').textContent=`${d.now_ist} · state updated ${sc.updated_ist||'–'} · started ${sc.started_ist||'–'} · PID ${sc.pid||'–'} · feed ${sc.ws_state||'?'} · watching ${sc.watching??'–'} tokens`;
+ const exposure=d.open.reduce((x,p)=>x+(p.cost_sol||0),0);
+ $('kpis').innerHTML=
+  kpi('Equity',f(a.equity_sol)+' SOL','start '+f(d.curve.start,2)+' · total '+sg(s.total_return_pct,2)+'%',cls(s.total_return_pct))+
+  kpi('Cash',f(a.balance_cash_sol)+' SOL','in positions ≈ '+f(a.equity_sol-a.balance_cash_sol)+' SOL')+
+  kpi('Daily PnL',sg(a.daily_pnl_sol)+' SOL',sg(a.daily_pnl_pct,2)+'% · limit −'+d.config.risk.daily_loss_limit_pct+'%',cls(a.daily_pnl_sol))+
+  kpi('Realized today',sg(a.realized_today_sol)+' SOL','loss streak '+a.loss_streak+'/'+d.config.risk.loss_streak_pause_after)+
+  kpi('Win rate',s.win_rate==null?'–':f(s.win_rate,0)+'%',`${s.wins}W / ${s.losses}L of ${s.n_closed}`)+
+  kpi('Profit factor',s.profit_factor==null?'–':f(s.profit_factor,2),'avg win '+sg(s.avg_win_pct,1)+'% · avg loss '+sg(s.avg_loss_pct,1)+'%',s.profit_factor==null?'':s.profit_factor>=1?'pos':'neg')+
+  kpi('Total fees',f(s.total_fees_sol)+' SOL','= '+(s.fee_to_loss_pct==null?'–':f(s.fee_to_loss_pct,0))+'% of |net PnL|','neg')+
+  kpi('Failed tx',s.failed_tx,'entries last hr '+a.entries_last_hour+'/'+d.config.risk.max_entries_per_hour)+
+  kpi('Open',d.open.length+' / '+d.config.risk.max_open_positions,'exposure '+f(exposure)+' SOL');
+ // open
+ $('nopen').textContent='';
+ $('open').innerHTML=d.open.length?`<table><tr><th>Symbol</th><th>Mint</th><th>Venue</th><th class="r">Entry px (SOL)</th><th class="r">Now px</th><th class="r">Unreal. %</th><th class="r">Size SOL</th><th>Held</th><th>TP stages</th><th>Left</th><th>Stop level</th></tr>`+
+  d.open.map(p=>`<tr><td><b>${ml(p.mint,p.symbol)}</b></td><td>${mintLinks(p.mint)}</td><td>${p.venue}</td><td class="r">${px(p.entry_price)}</td><td class="r">${px(p.cur_price)}</td>
+  <td class="r ${cls(p.unreal_pct)}"><b>${p.unreal_pct==null?'–':sg(p.unreal_pct,1)+'%'}</b><div class="mut">peak ${sg(p.peak_gain_pct,1)}%</div></td><td class="r">${f(p.size_sol)}</td><td>${dur(p.held_s)}<div class="mut">max in ${dur(p.time_stop_in_s)}</div></td>
+  <td><span class="pill ${p.tp_hit[0]?'hit':''}">TP1 +${d.config.exits.tp1_pct}%</span><span class="pill ${p.tp_hit[1]?'hit':''}">TP2 +${d.config.exits.tp2_pct}%</span><span class="pill">TP3 +${d.config.exits.tp3_pct}%</span></td>
+  <td>${p.tokens_left_pct==null?'–':f(p.tokens_left_pct,0)+'%'}</td>
+  <td>hard ${px(p.hard_stop_price)} (${p.hard_stop_pct}%)${p.trail_price?`<div>trail ${px(p.trail_price)} (−${d.config.exits.trailing_stop_pct}% from peak)</div>`:''}</td></tr>`).join('')+'</table>'
+  :'<div class="empty">No open positions — scanning for setups that pass every safety gate.</div>';
+ // closed
+ $('nclosed').textContent=d.closed.length?'('+d.closed.length+')':'';
+ $('closed').innerHTML=d.closed.length?`<table><tr><th>Exit time (IST)</th><th>Symbol</th><th>Venue</th><th class="r">Hold</th><th class="r">Size</th><th class="r">PnL SOL</th><th class="r">PnL %</th><th class="r">Fees</th><th class="r">Slip in/out</th><th>Why entered</th><th>Why exited</th></tr>`+
+  d.closed.map(c=>`<tr><td>${esc((c.exit_ist||'').replace(' IST',''))}</td><td><b>${ml(c.mint,c.symbol)}</b></td><td>${c.venue}</td><td class="r">${dur(c.hold_s)}</td><td class="r">${f(c.size_sol)}</td>
+  <td class="r ${cls(c.pnl_sol)}">${sg(c.pnl_sol,5)}</td><td class="r ${cls(c.pnl_pct)}"><b>${sg(c.pnl_pct,1)}%</b></td><td class="r">${f(c.fees,5)}</td><td class="r">${c.entry_slip==null?'–':f(c.entry_slip,1)}% / ${c.exit_slip==null?'–':f(c.exit_slip,1)}%</td>
+  <td class="reason">${esc(shortEntry(c.reason_entry))}</td><td class="reason">${esc(c.reason_exit)}</td></tr>`).join('')+'</table>':'<div class="empty">No closed trades yet.</div>';
+ // feed
+ $('feed').innerHTML=d.feed.map(e=>`<div class="ev"><span class="tm">${esc((e.ts_ist||'').replace(' IST','').slice(5))}</span><span class="tag t-${e.event}">${e.event}</span> <b>${esc(e.symbol||'')}</b> ${e.pnl_sol!=null?`<span class="${cls(e.pnl_sol)}">${sg(e.pnl_sol,5)} SOL</span>`:''}<div class="mut">${esc(shortEntry(e.text).slice(0,260))}</div></div>`).join('')||'<div class="empty">No events yet.</div>';
+ // perf
+ const row=(k,v,c='')=>`<div><span>${k}</span><span class="${c}">${v}</span></div>`;
+ $('perf').innerHTML=row('Closed trades',s.n_closed)+row('Win rate',s.win_rate==null?'–':f(s.win_rate,1)+'%')+row('Avg win',sg(s.avg_win_pct,1)+'% / '+sg(s.avg_win_sol,5)+' SOL','pos')+row('Avg loss',sg(s.avg_loss_pct,1)+'% / '+sg(s.avg_loss_sol,5)+' SOL','neg')+
+  row('Profit factor',s.profit_factor==null?'–':f(s.profit_factor,2))+row('Net PnL (closed)',sg(s.total_pnl_sol,5)+' SOL',cls(s.total_pnl_sol))+row('Gross PnL before fees',sg(s.gross_pnl_sol,5)+' SOL',cls(s.gross_pnl_sol))+
+  row('Fees on closed trades',f(s.total_fees_sol,5)+' SOL','neg')+row('Fees ÷ |net PnL|',s.fee_to_loss_pct==null?'–':f(s.fee_to_loss_pct,0)+'%')+row('Network fees (all tx)',f(s.network_fees_paid_sol,5)+' SOL')+row('Failed tx',s.failed_tx)+row('Avg hold',dur(s.avg_hold_s))+row('SOL/USD',d.sol_usd?'$'+f(d.sol_usd,1):'–');
+ // funnel
+ const top=Math.max(1,...d.funnel.map(x=>x.n||0));
+ $('funnel').innerHTML=d.funnel.map((x,i)=>`<div class="fl"><span>${x.label}</span><span>${x.n??'–'}${i>0&&d.funnel[i-1].n&&i<4?' · '+f((x.n||0)/d.funnel[i-1].n*100,1)+'%':''}</span></div><div class="bar"><div style="width:${Math.max(3,(x.n||0)/top*100)}%">${x.n??''}</div></div>`).join('');
+ $('rej').innerHTML=`<table><tr><th>Stage</th><th>Reason</th><th class="r">Events</th><th class="r">Tokens</th></tr>`+d.rejects.map(r=>`<tr><td>${r.stage}</td><td>${esc(r.reason)}</td><td class="r">${r.events}</td><td class="r">${r.mints??'–'}</td></tr>`).join('')+'</table>';
+ $('rrej').innerHTML=`<table>`+d.recent_rejects.map(r=>`<tr><td class="mut">${esc((r.ts_ist||'').slice(11,19))}</td><td>${esc(r.symbol)}</td><td>${r.stage}:${esc(r.reason)}</td><td class="mut">${esc(r.detail)}</td></tr>`).join('')+'</table>';
+ // config
+ const c=d.config;const sect=(t,o)=>`<div class="cfgh">${t}</div><div class="cfg">`+Object.entries(o||{}).map(([k,v])=>`<div><span>${k}</span><span>${esc(Array.isArray(v)?v.join(' – '):v)}</span></div>`).join('')+'</div>';
+ $('cfg').innerHTML=sect('Bankroll',c.bankroll)+sect('Risk limits',c.risk)+sect('Exits',c.exits)+sect('Key entry filters',c.filters)+sect('Execution model',c.execution);
+ // improvements
+ $('nimp').textContent=d.n_improvements?'('+d.n_improvements+')':'';
+ $('imp').innerHTML=d.improvements.length?d.improvements.map(x=>{const t=x.ts_ist||x.time_ist||x.ts||'';const head=x.title||x.summary||x.change||x.action||x.type||'change';const kind=x.status||x.kind||x.event||'';
+  const rest=Object.entries(x).filter(([k])=>!['ts_ist','time_ist','ts','title','summary','status','kind','event'].includes(k)).map(([k,v])=>k+': '+(typeof v==='object'?JSON.stringify(v):v)).join('\n');
+  return `<div class="imp"><div><span class="tag t-PARTIAL_EXIT">${esc(kind||'note')}</span> <b>${esc(typeof head==='object'?JSON.stringify(head):head)}</b> <span class="mut">${esc(t)}</span></div><pre>${esc(rest)}</pre></div>`}).join('')
+  :'<div class="empty">No self-improvement changes yet.<br>Reviews run ~9 AM / 3 PM / 9 PM IST; changes need ≥20 closed trades and a better replay. Currently '+d.summary.n_closed+' closed.</div>';
+ drawChart(d.curve);
+}
+function shortEntry(t){t=t||'';return t.replace(/^Entered [^:]*: all safety gates passed - /,'Passed all gates: ').replace(/, no bundle\/insider flags \(.*?\)/,', no bundle flags').replace(/ Rank bonuses:.*$/,'')}
+let lastCurve=null;
+function drawChart(cv){lastCurve=cv;const c=$('chart'),dpr=devicePixelRatio||1,W=c.clientWidth,H=c.clientHeight;c.width=W*dpr;c.height=H*dpr;const x=c.getContext('2d');x.scale(dpr,dpr);x.clearRect(0,0,W,H);
+ let pts=cv.samples.length>1?cv.samples:cv.realized.map(p=>({ts:p.ts,eq:p.eq}));
+ if(pts.length<2){x.fillStyle='#8b96ab';x.fillText('collecting data…',20,30);return}
+ const r=cv.realized;const t0=Math.min(pts[0].ts,r[0].ts),t1=pts[pts.length-1].ts;
+ let lo=Math.min(cv.start,...pts.map(p=>p.eq),...r.map(p=>p.eq)),hi=Math.max(cv.start,...pts.map(p=>p.eq),...r.map(p=>p.eq));const pad=(hi-lo||0.002)*0.15;lo-=pad;hi+=pad;
+ const L=52,R=10,T=10,B=24,X=t=>L+(t-t0)/(t1-t0||1)*(W-L-R),Y=v=>T+(hi-v)/(hi-lo)*(H-T-B);
+ x.font='11px sans-serif';x.strokeStyle='#222a3b';x.fillStyle='#8b96ab';x.lineWidth=1;
+ for(let i=0;i<=4;i++){const v=lo+(hi-lo)*i/4,y=Y(v);x.beginPath();x.moveTo(L,y);x.lineTo(W-R,y);x.stroke();x.fillText(v.toFixed(4),4,y+4)}
+ for(let i=0;i<=4;i++){const t=t0+(t1-t0)*i/4;const dt=new Date((t+19800)*1000);x.fillText(dt.toISOString().slice(11,16),Math.min(X(t)-12,W-34),H-6)}
+ x.setLineDash([4,4]);x.strokeStyle='#4a5568';x.beginPath();x.moveTo(L,Y(cv.start));x.lineTo(W-R,Y(cv.start));x.stroke();x.setLineDash([]);
+ const last=pts[pts.length-1].eq,col=last>=cv.start?'#2ee59d':'#ff5d73';
+ const g=x.createLinearGradient(0,T,0,H-B);g.addColorStop(0,col+'44');g.addColorStop(1,col+'00');
+ x.beginPath();pts.forEach((p,i)=>i?x.lineTo(X(p.ts),Y(p.eq)):x.moveTo(X(p.ts),Y(p.eq)));x.strokeStyle=col;x.lineWidth=2;x.stroke();x.lineTo(X(t1),H-B);x.lineTo(X(pts[0].ts),H-B);x.fillStyle=g;x.fill();
+ x.lineWidth=1;r.slice(1).forEach((p,i)=>{const up=p.eq>=r[i].eq;x.fillStyle=up?'#2ee59d':'#ff5d73';x.beginPath();x.arc(X(p.ts),Y(p.eq),4,0,7);x.fill();x.strokeStyle='#0b0e14';x.stroke()});
+}
+addEventListener('resize',()=>lastCurve&&drawChart(lastCurve));
+$('curvenote').textContent='line = live equity incl. unrealized · dots = closed trades (realized)';
+async function tick(){try{const r=await fetch(BASE+'api/data',{cache:'no-store'});if(!r.ok)throw new Error(r.status);render(await r.json())}catch(e){$('warn').style.display='block';$('warn').textContent='Connection problem: '+e.message+' — retrying…'}}
+tick();setInterval(tick,4000);
+</script></body></html>
