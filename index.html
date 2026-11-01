@@ -46,6 +46,8 @@ canvas{width:100%;height:260px;display:block}
  <div class="card"><h2>Equity curve (SOL) <span class="mut" id="curvenote"></span></h2><canvas id="chart"></canvas></div>
  <div class="card"><h2>Live event feed</h2><div class="feed" id="feed"></div></div>
 </div>
+<div class="card" id="stratcard" style="margin-bottom:12px;display:none"><h2>Strategy leaderboard <span class="mut" id="strathead"></span></h2><div class="tw" id="strat"></div>
+ <div class="meta" style="margin-top:6px">Each strategy trades its own independent 1 SOL paper book with identical safety gates, exits and execution costs; the best performer (30-min review) drives the main book. Paper only.</div></div>
 <div class="card" style="margin-bottom:12px"><h2>Open positions <span id="nopen"></span></h2><div class="tw" id="open"></div></div>
 <div class="card" style="margin-bottom:12px"><h2>Closed trades <span id="nclosed"></span></h2><div class="tw scroll" id="closed"></div></div>
 <div class="grid three" style="margin-bottom:12px">
@@ -128,9 +130,15 @@ function render(d){
   const rest=Object.entries(x).filter(([k])=>!['ts_ist','time_ist','ts','title','summary','status','kind','event'].includes(k)).map(([k,v])=>k+': '+(typeof v==='object'?JSON.stringify(v):v)).join('\n');
   return `<div class="imp"><div><span class="tag t-PARTIAL_EXIT">${esc(kind||'note')}</span> <b>${esc(typeof head==='object'?JSON.stringify(head):head)}</b> <span class="mut">${esc(t)}</span></div><pre>${esc(rest)}</pre></div>`}).join('')
   :'<div class="empty">No self-improvement changes yet.<br>Reviews run ~9 AM / 3 PM / 9 PM IST; changes need ≥20 closed trades and a better replay. Currently '+d.summary.n_closed+' closed.</div>';
+
+ // strategies (shadow books)
+ if(d.strategies&&d.strategies.strategies){const S=d.strategies,rows=Object.entries(S.strategies);$('stratcard').style.display='';
+  $('strathead').textContent='· main book follows '+(S.promoted||[]).join(', ')+' · updated '+(S.updated_ist||'').replace(' IST','')+' IST · next review '+(S.next_promotion_check_ist||'').slice(11,16);
+  $('strat').innerHTML='<table><tr><th>Strategy</th><th class="r">Trades</th><th class="r">Win rate</th><th class="r">Net PnL (SOL)</th><th class="r">Avg PnL %</th><th class="r">Max DD (SOL)</th><th class="r">Open</th><th class="r">Last-30 net</th><th>Entry logic</th></tr>'+
+   rows.map(([n,x])=>`<tr><td><b>${esc(n)}</b>${x.promoted?' <span class="tag t-OPEN">MAIN</span>':''}</td><td class="r">${x.trades}</td><td class="r">${x.win_rate_pct==null?'–':f(x.win_rate_pct,0)+'%'}</td><td class="r ${cls(x.net_pnl_sol)}">${sg(x.net_pnl_sol,4)}</td><td class="r ${cls(x.avg_pnl_pct)}">${x.avg_pnl_pct==null?'–':sg(x.avg_pnl_pct,1)+'%'}</td><td class="r">${f(x.max_drawdown_sol,4)}</td><td class="r">${x.open_positions}</td><td class="r ${cls(x.window&&x.window.net_pnl_sol)}">${x.window?sg(x.window.net_pnl_sol,4)+' ('+x.window.n+')':'–'}</td><td class="reason">${esc(x.desc)}</td></tr>`).join('')+'</table>'}
  drawChart(d.curve);
 }
-function shortEntry(t){t=t||'';return t.replace(/^Entered [^:]*: all safety gates passed - /,'Passed all gates: ').replace(/, no bundle\/insider flags \(.*?\)/,', no bundle flags').replace(/ Rank bonuses:.*$/,'')}
+function shortEntry(t){t=t||'';return t.replace(/^(\[Strategy ([^\]]+)\] )?Entered [^:]*: all (hard )?safety gates passed - /,(m,a,b)=>(b?'['+b+'] ':'')+'Passed all gates: ').replace(/, no bundle\/insider flags \(.*?\)/,', no bundle flags').replace(/ Rank bonuses:.*$/,'')}
 let lastCurve=null;
 function drawChart(cv){lastCurve=cv;const c=$('chart'),dpr=devicePixelRatio||1,W=c.clientWidth,H=c.clientHeight;c.width=W*dpr;c.height=H*dpr;const x=c.getContext('2d');x.scale(dpr,dpr);x.clearRect(0,0,W,H);
  let pts=cv.samples.length>1?cv.samples:cv.realized.map(p=>({ts:p.ts,eq:p.eq}));
